@@ -24,7 +24,7 @@ class Block:
 		return response.json()
 
 	def queryIntervalByRound(self, from_round, to_round):
-		if type(from_round) != int or type(to_round) != int or to_round - from_round < 1 or to_round < 1 or from_round < 0:
+		if type(from_round) != int or type(to_round) != int or to_round - from_round < 1 or from_round < 0 or to_round < 1:
 			return False
 		if to_round - from_round > 99:
 			return False

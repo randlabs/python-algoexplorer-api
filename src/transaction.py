@@ -8,8 +8,6 @@ class Transaction:
 	
 	def transactionsCount(self):
 		'''
-        Amount of available transactions
-
         :return: the amount of available transactions
         :rtype: int
 
@@ -18,55 +16,49 @@ class Transaction:
 		response_json = response.json()
 		return response_json['txCount']
 		
-	def queryTransaction(self, txid_or_index):
+	def queryTransaction(self, value):
 		'''
-        Transaction based on the specified index or txid
-
-        :param txid_or_index: index number or txid string to query, greater or equal than 0
-        :type txid_or_index: int or str
+        :param value: index number or txid string to query
+        :type value: int/str
         :return: the transaction based on the specified index or txid
         :rtype: dict
 
         '''
-		if (type(txid_or_index) != str and type(txid_or_index) != int) or txid_or_index < 0:
-			return False
-		response = fetchGet(self.config['url'] + '/transaction/' + str(txid_or_index))
+		if (type(value) != str and type(value) != int) or (type(value) == int and value < 0):
+			raise Exception('Invalid argument, transaction id must be a positive integer or a string hash')
+		response = fetchGet(self.config['url'] + '/transaction/' + str(value))
 		return response.json()
 
-	def queryTransactionLatestByIndex(self, count):
+	def queryLatestTransactions(self, count):
 		'''
-        Latest transactions
-
-        :param int count: amount of transactions to return, between 1 and 100
+        :param int count: amount of transactions to return. Limited to values between 1 and 100
         :return: the latest transactions
         :rtype: list
 
         '''
 		if type(count) != int or count < 1 or count > 100:
-			return False
+			raise Exception('Invalid argument, COUNT must be a positive integer between 1 and 100')
 		response = fetchGet(self.config['url'] + '/transaction/latest/' + str(count))
 		return response.json()
 
-	def queryTransactionIntervalByIndex(self, from_index, to_index):
+	def queryTransactionsFromInterval(self, from_index, to_index):
 		'''
-        Transactions between the specified indexes
-
-        :param int from_index: the starting index number (inclusive), greater or equal than 0
-        :param int to_index: the ending index number (inclusive), greater or equal than 1
+        :param int from_index: the starting index number (inclusive)
+        :param int to_index: the ending index number (inclusive)
         :return: the transactions between the specified indexes
         :rtype: list
 
         '''
-		if type(from_index) != int or type(to_index) != int or to_index - from_index < 1 or from_index < 0 or to_index < 1 or to_index - from_index > 100:
-			return False
+		if type(from_index) != int or type(to_index) != int or to_index - from_index < 1 or from_index < 0 or to_index < 1:
+			raise Exception('Invalid arguments, from_index and to_index must be a positive integers, and to_index must be greater than from_index')
+		if to_index - from_index > 99:
+			raise Exception('Max transactions to query is 100')
 		response = fetchGet(self.config['url'] + '/transaction/from/' + str(from_index) + '/to/' + str(to_index))
 		return response.json()
 
 	def queryTransactionLatestByTimestamp(self, since):
 		'''
-        Latest transactions since a specific timestamp.
-
-        :param int since: the earliest timestamp of the sought transactions, greater or equal than 0
+        :param int since: the earliest timestamp of the sought transactions
         :return: the latest transactions since a specific timestamp.
         :rtype: list
 
@@ -78,9 +70,7 @@ class Transaction:
 
 	def queryTransactionLatestCountByTimestamp(self, since):
 		'''
-        Amount of transactions since the specified UTC timestamp
-
-        :param int since: the earliest timestamp of the sought transactions, greater or equal than 0
+        :param int since: the earliest timestamp of the sought transactions
         :return: the amount of transactions since the specified UTC timestamp
         :rtype: int
 
@@ -93,10 +83,8 @@ class Transaction:
 
 	def queryTransactionIntervalByTimestamp(self, since, until):
 		'''
-        Transactions in a date range
-
-        :param int since: the starting UTC timestamp (inclusive), greater or equal than 0
-        :param int until: the ending UTC timestamp (inclusive), greater or equal than 1
+        :param int since: the starting UTC timestamp (inclusive)
+        :param int until: the ending UTC timestamp (inclusive)
         :return: the transactions in a date range
         :rtype: list
 
@@ -108,10 +96,8 @@ class Transaction:
 
 	def queryTransactionIntervalCountByTimestamp(self, since, until):
 		'''
-        Amount of transactions between the specified UTC timestamps
-
-        :param int since: the starting UTC timestamp (inclusive), greater or equal than 0
-        :param int until: the ending UTC timestamp (inclusive), greater or equal than 1
+        :param int since: the starting UTC timestamp (inclusive)
+        :param int until: the ending UTC timestamp (inclusive)
         :return: the amount of transactions between the specified UTC timestamps
         :rtype: int
 

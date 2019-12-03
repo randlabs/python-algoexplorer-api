@@ -8,8 +8,6 @@ class Block:
 	
 	def blockCount(self):
 		'''
-        Amount of available blocks
-
         :return: the amount of available blocks
         :rtype: int
 
@@ -18,58 +16,50 @@ class Block:
 		response_json = response.json()
 		return response_json['blockCount']
 
-	def queryBlock(self, hash_or_round):
+	def queryBlock(self, value):
 		'''
-        Block information based on the specified round or hash
-
-        :param hash_or_round: round number or hash string to query, greater or equal than 0
-        :type hash_or_round: int or str
+        :param value: a block number or block hash
+        :type value: int/str
         :return: the block information based on the specified round or hash
         :rtype: dict
 
         '''
-		if (type(hash_or_round) != int and type(hash_or_round) != str) or (type(hash_or_round) == int and hash_or_round < 0):
-			return False
-		response = fetchGet(self.config['url'] + '/block/' + str(hash_or_round))
+		if (type(value) != int and type(value) != str) or (type(value) == int and value < 0):
+			raise Exception('Invalid argument, value must be a positive integer or a string hash')
+		response = fetchGet(self.config['url'] + '/block/' + str(value))
 		return response.json()
 
-	def queryBlockLatestByRound(self, count):
+	def queryLatestBlocks(self, count):
 		'''
-        Latest blocks
-
-        :param count: amount of blocks to return, between 1 and 100
+        :param count: amount of blocks to return. Limited to values between 1 and 100
 		:type count: int
         :return: the latest blocks
         :rtype: list
 
         '''
 		if type(count) != int or count < 1 or count > 100:
-			return False
+			raise Exception('Invalid argument, count must be a positive integer between 1 and 100')
 		response = fetchGet(self.config['url'] + '/block/latest/' + str(count))
 		return response.json()
 
-	def queryBlockIntervalByRound(self, from_round, to_round):
+	def queryBlocksFromInterval(self, from_round, to_round):
 		'''
-        Blocks between the specified rounds
-
-        :param int from_round: the starting round number (inclusive), greater or equal than 0
-        :param int to_round: the ending round number (inclusive), greater or equal than 1
+        :param int from_round: the starting round number (inclusive)
+        :param int to_round: the ending round number (inclusive)
         :return: the blocks between the specified rounds
         :rtype: list
 
         '''
 		if type(from_round) != int or type(to_round) != int or to_round - from_round < 1 or from_round < 0 or to_round < 1:
-			return False
+			raise Exception('Invalid arguments, from_round and to_round must be a positive integers, and to_round must be greater than from_round')
 		if to_round - from_round > 99:
-			return False
+			raise Exception('Max blocks to query is 100')
 		response = fetchGet(self.config['url'] + '/block/from/' + str(from_round) + '/to/' + str(to_round))
 		return response.json()
 
 	def queryBlockLatestByTimestamp(self, since):
 		'''
-        Latest blocks since the specified timestamp
-
-        :param int since: the earliest timestamp of the sought blocks, greater or equal than 0
+        :param int since: the earliest timestamp of the sought blocks
         :return: the latest blocks since the specified timestamp
         :rtype: list
 
@@ -81,9 +71,7 @@ class Block:
 
 	def queryBlockLatestCountByTimestamp(self, since):
 		'''
-        Amount of blocks since the specified timestamp
-
-        :param int since: the earliest timestamp of the sought blocks, greater or equal than 0
+        :param int since: the earliest timestamp of the sought blocks
         :return: the amount of blocks since the specified timestamp
         :rtype: int
 
@@ -96,10 +84,8 @@ class Block:
 
 	def queryBlockIntervalByTimestamp(self, since, until):
 		'''
-        Blocks between the specified timestamps
-
-        :param int since: the starting UTC timestamp (inclusive), greater or equal than 0
-        :param int until: the ending UTC timestamp (inclusive), greater or equal than 1
+        :param int since: the starting UTC timestamp (inclusive)
+        :param int until: the ending UTC timestamp (inclusive)
         :return: the blocks between the specified timestamps
         :rtype: list
 
@@ -111,10 +97,8 @@ class Block:
 
 	def queryBlockIntervalCountByTimestamp(self, since, until):
 		'''
-        Amount of blocks between the specified timestamps
-
-        :param int since: the starting UTC timestamp (inclusive), greater or equal than 0
-        :param int until: the ending UTC timestamp (inclusive), greater or equal than 1
+        :param int since: the starting UTC timestamp (inclusive)
+        :param int until: the ending UTC timestamp (inclusive)
         :return: the amount of blocks between the specified timestamps
         :rtype: int
 
@@ -125,17 +109,15 @@ class Block:
 		response_json = response.json()
 		return response_json['blockCount']
 
-	def queryBlockTransactions(self, hash_or_round):
+	def queryBlockTransactions(self, value):
 		'''
-        Transactions of the specified block
-
-        :param hash_or_round: round number or hash string to query, greater or equal than 0
-        :type hash_or_round: int or str
+        :param value: round number or hash string to query
+        :type value: int or str
         :return: the transactions of the specified block
         :rtype: list
 
         '''
-		if (type(hash_or_round) != int and type(hash_or_round) != str) or (type(hash_or_round) == int and hash_or_round < 0):
-			return False
-		response = fetchGet(self.config['url'] + '/block/' + str(hash_or_round) + '/transactions')
+		if (type(value) != int and type(value) != str) or (type(value) == int and value < 0):
+			raise Exception('Invalid argument, value must be a positive integer or a string hash')
+		response = fetchGet(self.config['url'] + '/block/' + str(value) + '/transactions')
 		return response.json()

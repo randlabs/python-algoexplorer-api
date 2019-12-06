@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
+import time
+from typing import Union, Optional
 from request import fetchGet
 
 class Block:
 	def __init__(self, config):
 		self.config = config
 	
-	def blockCount(self):
+	def blockCount(self) -> int:
 		'''
         :return: the amount of available blocks
         :rtype: int
@@ -16,10 +18,9 @@ class Block:
 		response_json = response.json()
 		return response_json['blockCount']
 
-	def queryBlock(self, value):
+	def queryBlock(self, value: Union[int, str]) -> dict:
 		'''
         :param value: a block number or block hash
-        :type value: int/str
         :return: the block information based on the specified round or hash
         :rtype: dict
 
@@ -29,10 +30,9 @@ class Block:
 		response = fetchGet(self.config['url'] + '/block/' + str(value))
 		return response.json()
 
-	def queryLatestBlocks(self, count):
+	def queryLatestBlocks(self, count: int) -> list:
 		'''
         :param count: amount of blocks to return. Limited to values between 1 and 100
-		:type count: int
         :return: the latest blocks
         :rtype: list
 
@@ -42,10 +42,10 @@ class Block:
 		response = fetchGet(self.config['url'] + '/block/latest/' + str(count))
 		return response.json()
 
-	def queryBlocksFromInterval(self, from_round, to_round):
+	def queryBlocksFromInterval(self, from_round: int, to_round: int) -> list:
 		'''
-        :param int from_round: the starting round number (inclusive)
-        :param int to_round: the ending round number (inclusive)
+        :param from_round: the starting round number (inclusive)
+        :param to_round: the ending round number (inclusive)
         :return: the blocks between the specified rounds
         :rtype: list
 
@@ -57,62 +57,41 @@ class Block:
 		response = fetchGet(self.config['url'] + '/block/from/' + str(from_round) + '/to/' + str(to_round))
 		return response.json()
 
-	def queryBlockLatestByTimestamp(self, since):
+	def queryBlocksByDate(self, since: int, until: Optional[int] = None, count: Optional[bool] = False) -> Union[int, list]:
 		'''
-        :param int since: the earliest timestamp of the sought blocks
-        :return: the latest blocks since the specified timestamp
-        :rtype: list
+        :param since: the starting UTC timestamp (inclusive)
+		:param until: the ending UTC timestamp (inclusive)
+		:param count: if its true, will return the amount of blocks, else, will return an array of blocks
+        :return: the amount of blocks or a blocks list since the specified interval of time
+        :rtype: Union[int, list]
 
         '''
-		if type(since) != int or since < 0:
-			return False
-		response = fetchGet(self.config['url'] + '/block/since/' + str(since))
+		date = time.time() + 60
+		if type(since) != int or (until != None and type(until) != int):
+			raise Exception('Invalid arguments, the date must be a positive integer')
+		if since < 1546300800 or since > date or (until != None and (until - since < 1 or until - since > 172799)):
+			raise Exception('Invalid date')
+		if until != None and (until < since or until > date):
+			raise Exception('Invalid arguments, until must be greater than since')
+		if type(count) != bool:
+			raise Exception('Invalid arguments, COUNT must be a boolean')
+		url = self.config['url'] + '/block/since/' + str(since)
+		if count:
+			if until != None:
+				response = fetchGet(url + '/until/' + str(until) + '/count')
+			else:
+				response = fetchGet(url + '/count')
+			response_json = response.json()
+			return response_json['blockCount']
+		elif until != None:
+			response = fetchGet(url + '/until/' + str(until))
+		else:
+			response = fetchGet(url)
 		return response.json()
 
-	def queryBlockLatestCountByTimestamp(self, since):
-		'''
-        :param int since: the earliest timestamp of the sought blocks
-        :return: the amount of blocks since the specified timestamp
-        :rtype: int
-
-        '''
-		if type(since) != int or since < 0:
-			return False
-		response = fetchGet(self.config['url'] + '/block/since/' + str(since) + '/count')
-		response_json = response.json()
-		return response_json['blockCount']
-
-	def queryBlockIntervalByTimestamp(self, since, until):
-		'''
-        :param int since: the starting UTC timestamp (inclusive)
-        :param int until: the ending UTC timestamp (inclusive)
-        :return: the blocks between the specified timestamps
-        :rtype: list
-
-        '''
-		if type(since) != int or type(until) != int or until - since < 1 or until - since > 172799 or since < 0 or until < 1:
-			return False
-		response = fetchGet(self.config['url'] + '/block/since/' + str(since) + '/until/' + str(until))
-		return response.json()
-
-	def queryBlockIntervalCountByTimestamp(self, since, until):
-		'''
-        :param int since: the starting UTC timestamp (inclusive)
-        :param int until: the ending UTC timestamp (inclusive)
-        :return: the amount of blocks between the specified timestamps
-        :rtype: int
-
-        '''
-		if type(since) != int or type(until) != int or until - since < 1 or until - since > 172799 or since < 0 or until < 1:
-			return False
-		response = fetchGet(self.config['url'] + '/block/since/' + str(since) + '/until/' + str(until) + '/count')
-		response_json = response.json()
-		return response_json['blockCount']
-
-	def queryBlockTransactions(self, value):
+	def queryBlockTransactions(self, value: Union[int, str]) -> list:
 		'''
         :param value: round number or hash string to query
-        :type value: int or str
         :return: the transactions of the specified block
         :rtype: list
 

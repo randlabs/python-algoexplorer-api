@@ -8,12 +8,12 @@ client = AlgoexplorerApi('testnet')
 
 class BlockOperations(unittest.TestCase):
 
-    def testBlockCount(self):
+    def testQueryBlockCount(self):
         '''
         It should query block count
 
         '''
-        result = client.blockCount()
+        result = client.queryBlockCount()
         self.assertTrue(type(result) == int)
 
     def testQueryBlockByRoundNumber(self):
@@ -68,7 +68,7 @@ class BlockOperations(unittest.TestCase):
         result = client.queryBlocksByDate(since, count=True)
         self.assertTrue(type(result) == int)
 
-    def testQueryBlocksFromDateInterval(self):
+    def testQueryBlocksByDateInterval(self):
         '''
         It should query a block by a date interval
 
@@ -76,10 +76,10 @@ class BlockOperations(unittest.TestCase):
         interval = 100
         until = int(time.time())
         since = until - interval
-        result = client.queryBlocksByDate(since, until=until)
+        result = client.queryBlocksByDate(since, until)
         self.assertTrue(type(result) == list)
 
-    def testQueryBlocksCountFromDateInterval(self):
+    def testQueryBlocksCountByDateInterval(self):
         '''
         It should query the block count by a date interval
 
@@ -87,7 +87,7 @@ class BlockOperations(unittest.TestCase):
         interval = 100
         until = int(time.time())
         since = until - interval
-        result = client.queryBlocksByDate(since, until=until, count=True)
+        result = client.queryBlocksByDate(since, until, True)
         self.assertTrue(type(result) == int)
 
     def testQueryBlockTransactionsByRoundNumber(self):

@@ -2,9 +2,10 @@
 
 from config import MAINNET, TESTNET, BETANET
 from block import Block
+from account import Account
 from transaction import Transaction
 
-class AlgoexplorerApi(Block, Transaction):
+class AlgoexplorerApi(Block, Transaction, Account):
     def __init__(self, network_name = MAINNET):
         if network_name:
             if network_name == 'mainnet':
@@ -16,3 +17,4 @@ class AlgoexplorerApi(Block, Transaction):
         
         Block.__init__(self, self._config)
         Transaction.__init__(self, self._config)
+        Account.__init__(self, self._config)

@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
-from config import MAINNET, TESTNET, BETANET
+from node import Node
 from block import Block
 from account import Account
+from statistics import Statistics
 from transaction import Transaction
+from config import MAINNET, TESTNET, BETANET
 
-class AlgoexplorerApi(Block, Transaction, Account):
-    def __init__(self, network_name = MAINNET):
+class AlgoexplorerApi(Block, Transaction, Account, Statistics, Node):
+    def __init__(self, network_name: str = 'mainnet'):
         if network_name:
             if network_name == 'mainnet':
                 self._config = MAINNET
@@ -18,3 +20,21 @@ class AlgoexplorerApi(Block, Transaction, Account):
         Block.__init__(self, self._config)
         Transaction.__init__(self, self._config)
         Account.__init__(self, self._config)
+        Statistics.__init__(self, self._config)
+        Node.__init__(self, self._config)
+
+    def getGenesisId(self):
+        '''
+		Returns:
+			the genesis ID
+
+        '''
+        return self._config['id']
+        
+    def getGenesisHash(self):
+        '''
+		Returns:
+			the genesis Hash
+
+        '''
+        return self._config['genesis']

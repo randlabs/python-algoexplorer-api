@@ -23,7 +23,7 @@ class Account:
 	def queryAddress(self, address: str) -> dict:
 		'''
 		Args:
-		address: address of the account to query
+			address: address of the account to query
 
 		Returns:
 			information about the specified address

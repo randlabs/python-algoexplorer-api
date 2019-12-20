@@ -2,7 +2,7 @@
 
 import time
 import unittest
-from api import AlgoexplorerApi
+from algoexplorersdk import AlgoexplorerApi
 
 client = AlgoexplorerApi('testnet')
 

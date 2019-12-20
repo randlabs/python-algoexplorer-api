@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from request import fetchGet, fetchPost
-from validates import validateHex
+from algoexplorersdk.network.request import fetchGet, fetchPost
+from algoexplorersdk.utils.validates import validateHex
 
 class Node:
 	'''

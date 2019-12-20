@@ -2,7 +2,7 @@
 
 import time
 from typing import Union, Optional
-from request import fetchGet
+from algoexplorersdk.network.request import fetchGet
 
 class Transaction:
 	'''

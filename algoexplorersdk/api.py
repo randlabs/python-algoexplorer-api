@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-from node import Node
-from block import Block
-from account import Account
-from statistics import Statistics
-from transaction import Transaction
-from config import MAINNET, TESTNET, BETANET
+from .node.node import Node
+from .block.block import Block
+from .account.account import Account
+from .statistics.statistics import Statistics
+from .transaction.transaction import Transaction
+from .config import MAINNET, TESTNET, BETANET
 
 class AlgoexplorerApi(Block, Transaction, Account, Statistics, Node):
     def __init__(self, network_name: str = 'mainnet'):

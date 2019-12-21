@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from .asset.asset import Asset
 from .node.node import Node
 from .block.block import Block
 from .account.account import Account
@@ -7,7 +8,7 @@ from .statistics.statistics import Statistics
 from .transaction.transaction import Transaction
 from .config import MAINNET, TESTNET, BETANET
 
-class AlgoexplorerApi(Block, Transaction, Account, Statistics, Node):
+class AlgoexplorerApi(Block, Transaction, Account, Statistics, Node, Asset):
     def __init__(self, network_name: str = 'mainnet'):
         if network_name:
             if network_name == 'mainnet':
@@ -22,6 +23,7 @@ class AlgoexplorerApi(Block, Transaction, Account, Statistics, Node):
         Account.__init__(self, self._config)
         Statistics.__init__(self, self._config)
         Node.__init__(self, self._config)
+        Asset.__init__(self, self._config)
 
     def getGenesisId(self):
         '''
